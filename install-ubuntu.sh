@@ -142,3 +142,39 @@ print ("4.When power adapter reconnected, you will see: AC Power OK, Power Adapt
 input("Testing Started")
 ' > ${CUR_DIR}/x708pld.py
 sudo chmod +x ${CUR_DIR}/x708pld.py
+
+#####################################
+echo '#!/bin/bash
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+/etc/x708pwr.sh &
+
+exit 0
+' > /etc/rc.local
+sudo chmod +x /etc/rc.local
+
+# save these shell to x708.sh
+SHELL_FILE=/etc/profile.d/x708.sh
+
+if [ -e $SHELL_FILE ]; then
+	sudo rm $SHELL_FILE -f
+fi
+
+echo "alias x708off='sudo /usr/local/bin/x708softsd.sh'" > ${SHELL_FILE}
