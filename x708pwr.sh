@@ -24,15 +24,17 @@ while [ 1 ]; do
     /bin/sleep 0.2
   else
     pulseStart=$(date +%s%N | cut -b1-13)
-    if [ $pldSignal = 1 ]; then
+    while [ $pldSignal = 1 ]; do
+      echo "X708 PLD Detected"
       if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $PLDPULSEMINMUM ]; then
         echo "X708 PLD Shutting down", PLD, ", halting Rpi ..."
         sudo x708softsd.sh
         sudo poweroff
         exit
       fi
+      /bin/sleep 0.1
       pldSignal=$(cat /sys/class/gpio/gpio$PLD/value)
-    fi
+    done
     pulseStart=$(date +%s%N | cut -b1-13)
     while [ $shutdownSignal = 1 ]; do
       /bin/sleep 0.02
